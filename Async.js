@@ -12,8 +12,9 @@ function loadPage() {
     outputs[0].innerHTML = "";
     outputs[1].innerHTML = "";
     error.innerHTML = "";
-    ckeck();
-    asyncFunction(input.value).onSuccess(successCallback).onError(errorCallback).rise();
+    if (ckeck()){
+      asyncFunction(input.value).onSuccess(successCallback).onError(errorCallback).rise();
+    }  
   });
 }
 
@@ -36,8 +37,9 @@ function ckeck(){
   if (isNaN(+input.value.replace(",", "."))) {
      input.style.backgroundColor = "red";
      error.innerHTML = "Number requred";
+     return false;
     }
-  
+  return true;
 };
   
 function successCallback(n, output){
@@ -51,26 +53,13 @@ function errorCallback(n){
   error.innerHTML = objError[r]["код"]+"<br/>"+objError[r]["сообщение"];
 }; //error
 
-const WAIT = 0;
-const SUCCESS = 1;
-const ERROR = 2;
-
 function asyncFunction(n) {
-  var status = WAIT;
   this.onSuccessCallback = null;
-  this.onSuccessHandler = function() { //??????
-    status = SUCCESS;
-    onSuccessCallback(n); 
-  };
   this.onSuccess = function(callback){
       onSuccessCallback = callback;
       return this;
   }, 
   this.onErrorCallback = null;
-  this.onErrorHandler = function() { //?????
-    status = ERROR;
-    onErrorCallback(n); 
-  };
   this.onError = function(callback){
       onErrorCallback = callback;
       return this;
