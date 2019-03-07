@@ -2,19 +2,12 @@ var btn;
 var input;
 var error;
 var outputs;
-var statuses = [];
-const WAIT = 0;
-const SUCCESS = 1;
-const ERROR = 2;
 
 function loadPage() {
   btn = document.getElementById("btn");
   input = document.getElementById("input");
   error = document.getElementById("error");
   outputs = [document.getElementById("output1"), document.getElementById("output2")];
-  for (i = 0; i < outputs.length; i++) {
-    statuses.push("status");
-  };
   btn.addEventListener("click", function (event) {
     outputs[0].innerHTML = "";
     outputs[1].innerHTML = "";
@@ -22,7 +15,7 @@ function loadPage() {
     ckeck();
     asyncFunction(input.value).onSuccess(successCallback).onError(errorCallback);
   });
-}
+};
 
 var objError = {
   1: {
@@ -80,48 +73,44 @@ function successCallback(n, j) {
   n *= 10;
   outputs[j].innerHTML = n;
   return n;
-}; //calculation
+};
 
 function errorCallback() {
   var r = (Math.floor(Math.random() * (10)) + 1);
   error.innerHTML = objError[r]["код"] + "<br/>" + objError[r]["сообщение"];
-}; //error
+};
 
 function asyncFunction(n) {
-  for (i = 0; i < statuses.length; i++) {
-    statuses[i] = WAIT;
-    console.log(i);
-  };
-
+  const WAIT = 0;
+  const SUCCESS = 1;
+  const ERROR = 2;
+  var statuses = [];
+  for (i = 0; i < outputs.length; i++) {
+    statuses.push("WAIT");
+}
+  
   var timer = setTimeout(function () {
     for (i = 0; i < statuses.length; i++) {
-      console.log(i + 10);
-      if (Math.random() < 0.5) {
+      if (Math.random() < 0.7) {
         statuses[i] = SUCCESS;
       } else {
         statuses[i] = ERROR;
-        for (j = i + 1; j < statuses.length; j++) {
-          statuses[j] = WAIT;
+        for (l = i + 1; l < statuses.length; l++) {
+          statuses[l] = WAIT;
         }
         break;
       }
-
     }
   }, Math.floor(Math.random() * (3000 - 1000 + 1)) + 1000);
 
-  //(Math.floor(Math.random() * (3)) + 3));
-
   var onObj = {
-    //onSuccessCallback: null,
     onSuccess: function (callback) {
-      //var timer = setTimeout(function () {
       var timer = setInterval(function () {
-        i = i ? i + 1 : 0;
-        if (statuses[i] != WAIT) {
+        if (statuses[0] != WAIT) {
           for (i = 0; i < statuses.length; i++) {
             if (statuses[i] === SUCCESS) {
               n = callback(n, i);
-              console.log("Succes" + i);
+              console.log("Succes " + i);
               clearInterval(timer);
             }
           }
@@ -130,22 +119,21 @@ function asyncFunction(n) {
       return this;
     },
     onError: function (callback) {
-      //var onErrorCallback = function () {};
       var timer = setInterval(function () {
-        i = i ? i + 1 : 0;
-        if (statuses[i] != WAIT) {
+        if (statuses[0] != WAIT) {
           for (i = 0; i < statuses.length; i++) {
             if (statuses[i] === ERROR) {
               callback();
               console.log("Error" + i);
               clearInterval(timer);
+              break;
             }
           }
         }
       }, 500);
-      // onErrorCallback();
+      //onErrorCallback();
       return this;
     }
   }
   return onObj;
-}
+};
