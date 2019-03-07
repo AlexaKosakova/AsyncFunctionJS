@@ -93,44 +93,57 @@ function asyncFunction(n) {
     console.log(i);
   };
 
-  /*var timer = setTimeout(function () {*/
-  for (i = 0; i < statuses.length; i++) {
-    console.log(i + 10);
-    if (Math.random() < 0.7) {
-      statuses[i] = SUCCESS;
-    } else {
-      statuses[i] = ERROR;
-      break;
-    }
+  var timer = setTimeout(function () {
+    for (i = 0; i < statuses.length; i++) {
+      console.log(i + 10);
+      if (Math.random() < 0.5) {
+        statuses[i] = SUCCESS;
+      } else {
+        statuses[i] = ERROR;
+        for (j = i + 1; j < statuses.length; j++) {
+          statuses[j] = WAIT;
+        }
+        break;
+      }
 
-  }
-  /*}, 1000);*/
+    }
+  }, Math.floor(Math.random() * (3000 - 1000 + 1)) + 1000);
 
   //(Math.floor(Math.random() * (3)) + 3));
 
   var onObj = {
-    onSuccessCallback: null,
+    //onSuccessCallback: null,
     onSuccess: function (callback) {
-      var timer = setTimeout(function () {
-        for (i = 0; i < statuses.length; i++) {
-          if (statuses[i] === SUCCESS) {
-            n = callback(n, i);
-            console.log("Succes" + i);
+      //var timer = setTimeout(function () {
+      var timer = setInterval(function () {
+        i = i ? i + 1 : 0;
+        if (statuses[i] != WAIT) {
+          for (i = 0; i < statuses.length; i++) {
+            if (statuses[i] === SUCCESS) {
+              n = callback(n, i);
+              console.log("Succes" + i);
+              clearInterval(timer);
+            }
           }
-        };
-      }, Math.floor(Math.random() * (3000 - 1000 + 1)) + 1000);
+        }
+      }, 500);
       return this;
     },
-    onErrorCallback: null,
     onError: function (callback) {
-      var timer = setTimeout(function () {
-        for (i = 0; i < statuses.length; i++) {
-          if (statuses[i] === ERROR) {
-            callback();
+      //var onErrorCallback = function () {};
+      var timer = setInterval(function () {
+        i = i ? i + 1 : 0;
+        if (statuses[i] != WAIT) {
+          for (i = 0; i < statuses.length; i++) {
+            if (statuses[i] === ERROR) {
+              callback();
+              console.log("Error" + i);
+              clearInterval(timer);
+            }
           }
-        };
-
-      }, Math.floor(Math.random() * (3000 - 1000 + 1)) + 1000);
+        }
+      }, 500);
+      // onErrorCallback();
       return this;
     }
   }
