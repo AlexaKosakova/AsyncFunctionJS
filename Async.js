@@ -1,10 +1,9 @@
-var btn;
 var input;
 var error;
 var outputs;
 
 function loadPage() {
-  btn = document.getElementById("btn");
+  var btn = document.getElementById("btn");
   input = document.getElementById("input");
   error = document.getElementById("error");
   outputs = [document.getElementById("output1"), document.getElementById("output2")];
@@ -12,12 +11,13 @@ function loadPage() {
     outputs[0].innerHTML = "";
     outputs[1].innerHTML = "";
     error.innerHTML = "";
-    ckeck();
-    asyncFunction(input.value).onSuccess(successCallback).onError(errorCallback);
+    if (ckeck()) {
+      asyncFunction(input.value).onSuccess(successCallback).onError(errorCallback);
+    }
   });
 };
 
-var objError = {
+var errorCodes = {
   1: {
     "код": 418,
     "сообщение": "я — чайник"
@@ -65,73 +65,68 @@ function ckeck() {
   error.innerHTML = "";
   if (isNaN(+input.value.replace(",", "."))) {
     input.style.backgroundColor = "red";
-    error.innerHTML = "Number requred";
+    error.innerHTML = "Введите число";
+    return false;
   }
+  return true;
 };
 
-function successCallback(n, j) {
+function successCallback(n) {
   n *= 10;
-  outputs[j].innerHTML = n;
+  for (var i = 0; i < outputs.length; i++) {
+    if (outputs[i].innerHTML === "") {
+      outputs[i].innerHTML = n;
+      if (i !== outputs.length - 1) {
+      asyncFunction(n).onSuccess(successCallback).onError(errorCallback);
+      }
+      break;
+    }
+  }
   return n;
 };
 
 function errorCallback() {
   var r = (Math.floor(Math.random() * (10)) + 1);
-  error.innerHTML = objError[r]["код"] + "<br/>" + objError[r]["сообщение"];
+  error.innerHTML = errorCodes[r]["код"] + "<br/>" + errorCodes[r]["сообщение"];
 };
 
 function asyncFunction(n) {
   const WAIT = 0;
   const SUCCESS = 1;
   const ERROR = 2;
-  var statuses = [];
-  for (i = 0; i < outputs.length; i++) {
-    statuses.push("WAIT");
-}
-  
+  var status = WAIT;
+
   var timer = setTimeout(function () {
-    for (i = 0; i < statuses.length; i++) {
-      if (Math.random() < 0.7) {
-        statuses[i] = SUCCESS;
-      } else {
-        statuses[i] = ERROR;
-        for (l = i + 1; l < statuses.length; l++) {
-          statuses[l] = WAIT;
-        }
-        break;
-      }
+    if (Math.random() < 0.7) {
+      status = SUCCESS;
+    } else {
+      status = ERROR;
     }
-  }, Math.floor(Math.random() * (3000 - 1000 + 1)) + 1000);
+  }, Math.floor(Math.random() * (200)) + 300);
 
   var onObj = {
     onSuccess: function (callback) {
       var timer = setInterval(function () {
-        if (statuses[0] != WAIT) {
-          for (i = 0; i < statuses.length; i++) {
-            if (statuses[i] === SUCCESS) {
-              n = callback(n, i);
-              console.log("Succes " + i);
-              clearInterval(timer);
-            }
+        if (status != WAIT) {
+          if (status === SUCCESS) {
+            n = callback(n);
+            console.log("Succes ");
+            clearInterval(timer);
           }
         }
-      }, 500);
+      }, 100);
       return this;
     },
     onError: function (callback) {
       var timer = setInterval(function () {
-        if (statuses[0] != WAIT) {
-          for (i = 0; i < statuses.length; i++) {
-            if (statuses[i] === ERROR) {
-              callback();
-              console.log("Error" + i);
-              clearInterval(timer);
-              break;
-            }
+        if (status != WAIT) {
+          if (status === ERROR) {
+            callback();
+            console.log("Error ");
+            clearInterval(timer);
           }
         }
-      }, 500);
-      //onErrorCallback();
+      }, 100);
       return this;
     }
   }
