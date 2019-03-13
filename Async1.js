@@ -32,16 +32,19 @@ function ckeck() {
 }
 
 function successCallback(v) {
-    //v *= 10;
-    if (outputs[0].innerHTML === "") {
-        outputs[0].innerHTML = v;
-        res = asyncFunction(v).onSuccess(successCallback).onError(errorCallback);
-    } else if (outputs[1].innerHTML === "") {
-        outputs[1].innerHTML = v;
-        error.innerHTML = "SUCCESS";
-        btn.disabled = false; //
+    for (var i = 0; i < outputs.length; i++) {
+        if (outputs[i].innerHTML === "") {
+            outputs[i].innerHTML = v;
+            if (i !== outputs.length - 1) {
+                res = asyncFunction(v).onSuccess(successCallback).onError(errorCallback);
+            } else {
+                error.innerHTML = "SUCCESS";
+                btn.disabled = false;
+            }
+            break;
+        }
     }
-};
+}
 
 function errorCallback(message) {
     error.innerHTML = message;
