@@ -111,8 +111,8 @@ function asyncFunction(n) {
           if (status === SUCCESS) {
             n = callback(n);
             console.log("Succes ");
-            clearInterval(timer);
           }
+          clearInterval(timer);
         }
       }, 100);
       return this;
@@ -123,8 +123,8 @@ function asyncFunction(n) {
           if (status === ERROR) {
             callback();
             console.log("Error ");
-            clearInterval(timer);
           }
+          clearInterval(timer);
         }
       }, 100);
       return this;

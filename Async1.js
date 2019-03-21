@@ -97,32 +97,39 @@ function asyncFunction(n) {
             "сообщение": "информация не авторитетна"
         }
     };
+
+
     var result = {
         status: WAIT,
         value: null,
         onSuccess: function (callback) {
+            var i = 0;
             var timer = setInterval(function () {
-                if (result.status === SUCCESS) {
-                    callback(result.value);
-                    console.log("Succes!");
+                console.log("Succes!" + i++);
+                if (result.status !== WAIT) {
+                    if (result.status === SUCCESS) {
+                        callback(result.value);
+                        console.log("Succes!" + i++);
+                    }
                     clearInterval(timer);
                 }
             }, 100);
             return this;
         },
         onError: function (callback) {
+            var i = 0;
             var timer = setInterval(function () {
-                if (result.status === ERROR) {
-                    callback(result.value);
-                    console.log("Error!");
+                console.log("Error!" + i++);
+                if (result.status !== WAIT) {
+                    if (result.status === ERROR) {
+                        callback(result.value);
+                        console.log("Error!" + i++);
+                    }
                     clearInterval(timer);
                 }
             }, 100);
             return this;
         },
-        isWaiting: function () {
-            return status === WAIT;
-        }
     };
 
     setTimeout(function () {
